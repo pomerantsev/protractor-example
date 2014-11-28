@@ -7,8 +7,8 @@ exports.config = {
   multiCapabilities: [
     {
       'browserName': 'chrome',
-      'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
-      'build': process.env.TRAVIS_BUILD_NUMBER
+      // 'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+      // 'build': process.env.TRAVIS_BUILD_NUMBER
     }
   ],
 
