@@ -1,6 +1,6 @@
 exports.config = {
   sauceUser: process.env.SAUCE_USERNAME,
-  sauceKey: process.env.SAUCE_ACCESS_KEY,
+  sauceKey: '497ab04e-f31b-4a7b-9b18-ae3fbe023222',
   specs: ['**/*.spec.js'],
   baseUrl: 'http://localhost:8000/',
 
