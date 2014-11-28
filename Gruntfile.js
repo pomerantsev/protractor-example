@@ -37,7 +37,8 @@ module.exports = function (grunt) {
       }
     },
     protractor: {
-      normal: 'test/protractor.conf.js'
+      normal: 'test/protractor.conf.js',
+      travis: 'test/protractor-travis.conf.js'
     }
   });
 
@@ -93,6 +94,15 @@ module.exports = function (grunt) {
       'webdriver',
       'connect:testserver',
       'protractor:normal'
+    ]
+  );
+
+  grunt.registerTask(
+    'test:travis-protractor',
+    'Run the end to end tests with Protractor for Travis CI builds',
+    [
+      'connect:testserver',
+      'protractor:travis'
     ]
   );
 };
