@@ -35,14 +35,16 @@ describe('ng-infinite-scroll', function () {
   });
 
   it('respects the disabled attribute', function () {
-    browser.get('test/examples/disabled.html');
+    replace('content', '<div infinite-scroll="loadMore()" infinite-scroll-disabled="busy">' + itemsMarkup + '</div>');
+    browser.get(pathToDocument);
     expect(getItems().count()).toBe(0);
     element(by.id('action')).click();
     expect(getItems().count()).toBe(100);
   });
 
   it('respects the infinite-scroll-distance attribute', function () {
-    browser.get('test/examples/distance.html');
+    replace('content', '<div infinite-scroll="loadMore()" infinite-scroll-distance="1">' + itemsMarkup + '</div>');
+    browser.get(pathToDocument);
     expect(getItems().count()).toBe(100);
     // 2 * window.innerHeight means that the bottom of the screen should be somewhere close to
     // body height - window height. That means that the top of the window is body height - 2 * window height.
