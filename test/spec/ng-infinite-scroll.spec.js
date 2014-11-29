@@ -1,10 +1,27 @@
+var fs = require('fs');
+
+var itemsMarkup = '<p ng-repeat="item in items track by $index">{{$index}}</p>';
+
 describe('ng-infinite-scroll', function () {
 
   function getItems () {
     return element.all(by.repeater('item in items'));
   }
 
+  function replace (block, content) {
+    var file = 'test/examples/index.html';
+    var fileContents = fs.readFileSync(file).toString();
+    var modifiedContents = fileContents.replace(new RegExp('(<!-- ' + block + ':start -->)[^]*(<!-- ' + block + ':end -->)', 'm'), '$1' + content + '$2');
+    fs.writeFileSync(file, modifiedContents);
+  }
+
+  // This should be handled by afterAll, which Jasmine lacks
+  afterEach(function () {
+    replace('content', '');
+  });
+
   it('should be triggered when page is scrolled to the bottom', function () {
+    replace('content', '<div infinite-scroll="loadMore()">' + itemsMarkup + '</div>');
     browser.get('test/examples/index.html');
     var items = getItems();
     expect(items.count()).toBe(100);
