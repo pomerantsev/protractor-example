@@ -5,15 +5,23 @@
   <script>
     angular.module('app', ['infinite-scroll'])
       .run(function ($rootScope) {
-        $rootScope.items = new Array(100);
+        $rootScope.items = [];
         $rootScope.loadMore = function () {
           [].push.apply($rootScope.items, new Array(100));
+        };
+
+        $rootScope.busy = true;
+
+        $rootScope.enable = function () {
+          $rootScope.busy = false;
         };
       });
   </script>
 </head>
 <body ng-app="app">
-  <div infinite-scroll="loadMore()">
+  <a id="action" ng-click="enable()">Enable</a>
+  <div infinite-scroll="loadMore()"
+       infinite-scroll-disabled="busy">
     <p ng-repeat="item in items track by $index">
       {{$index}}
     </p>
