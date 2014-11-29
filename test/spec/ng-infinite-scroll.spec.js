@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 var itemsMarkup = '<p ng-repeat="item in items track by $index">{{$index}}</p>';
+var pathToDocument = 'test/examples/index.html';
 
 describe('ng-infinite-scroll', function () {
 
@@ -9,10 +10,9 @@ describe('ng-infinite-scroll', function () {
   }
 
   function replace (block, content) {
-    var file = 'test/examples/index.html';
-    var fileContents = fs.readFileSync(file).toString();
+    var fileContents = fs.readFileSync(pathToDocument).toString();
     var modifiedContents = fileContents.replace(new RegExp('(<!-- ' + block + ':start -->)[^]*(<!-- ' + block + ':end -->)', 'm'), '$1' + content + '$2');
-    fs.writeFileSync(file, modifiedContents);
+    fs.writeFileSync(pathToDocument, modifiedContents);
   }
 
   // This should be handled by afterAll, which Jasmine lacks
@@ -20,23 +20,18 @@ describe('ng-infinite-scroll', function () {
     replace('content', '');
   });
 
-  it('should be triggered when page is scrolled to the bottom', function () {
+  it('should be triggered immediately and when page is scrolled to the bottom', function () {
     replace('content', '<div infinite-scroll="loadMore()">' + itemsMarkup + '</div>');
-    browser.get('test/examples/index.html');
+    browser.get(pathToDocument);
     var items = getItems();
     expect(items.count()).toBe(100);
     browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)');
     expect(items.count()).toBe(200);
   });
 
-  it('triggers immediately by default', function () {
-    browser.get('test/examples/immediately.html');
-    var items = getItems();
-    expect(items.count()).toBe(100);
-  });
-
   it('does not trigger immediately when infinite-scroll-immediate-check is false', function () {
-    browser.get('test/examples/immediate-check-off.html');
+    replace('content', '<div infinite-scroll="loadMore()" infinite-scroll-immediate-check="false">' + itemsMarkup + '</div>');
+    browser.get(pathToDocument);
     var items = getItems();
     expect(items.count()).toBe(0);
   });
