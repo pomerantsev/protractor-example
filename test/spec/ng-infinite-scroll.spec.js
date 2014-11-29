@@ -26,4 +26,17 @@ describe('ng-infinite-scroll', function () {
     element(by.id('action')).click();
     expect(items.count()).toBe(100);
   });
+
+  it('respects the infinite-scroll-distance attribute', function () {
+    browser.get('test/examples/distance.html');
+    var items = element.all(by.repeater('item in items'));
+    expect(items.count()).toBe(100);
+    // 2 * window.innerHeight means that the bottom of the screen should be somewhere close to
+    // body height - window height. That means that the top of the window is body height - 2 * window height.
+    // Why can't we even set -10 here? Looks like it also takes the last element's height into account
+    browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight - 20)');
+    expect(items.count()).toBe(100);
+    browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight)');
+    expect(items.count()).toBe(200);
+  });
 });
