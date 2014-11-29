@@ -1,0 +1,21 @@
+<!doctype html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.4/angular.min.js"></script>
+  <script src="../../lib/ng-infinite-scroll.js"></script>
+  <script>
+    angular.module('app', ['infinite-scroll'])
+      .run(function ($rootScope) {
+        $rootScope.items = new Array(100);
+        $rootScope.loadMore = function () {
+          [].push.apply($rootScope.items, new Array(100));
+        };
+      });
+  </script>
+</head>
+<body ng-app="app">
+  <div infinite-scroll="loadMore()">
+    <p ng-repeat="item in items track by $index">
+      {{$index + 1}}
+    </p>
+  </div>
+</body>
