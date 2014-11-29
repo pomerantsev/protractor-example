@@ -20,38 +20,49 @@ describe('ng-infinite-scroll', function () {
     replace('content', '');
   });
 
-  it('should be triggered immediately and when page is scrolled to the bottom', function () {
-    replace('content', '<div infinite-scroll="loadMore()">' + itemsMarkup + '</div>');
-    browser.get(pathToDocument);
-    expect(getItems().count()).toBe(100);
-    browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)');
-    expect(getItems().count()).toBe(200);
-  });
+  ['1.2.0', '1.3.4'].forEach(function (angularVersion) {
+    describe('with Angular ' + angularVersion, function () {
+      beforeEach(function () {
+        replace('angularjs', '<script src="http://ajax.googleapis.com/ajax/libs/angularjs/' + angularVersion + '/angular.min.js"></script>');
+      });
+      afterEach(function () {
+        replace('angularjs', '');
+      });
+      it('should be triggered immediately and when page is scrolled to the bottom', function () {
+        replace('content', '<div infinite-scroll="loadMore()">' + itemsMarkup + '</div>');
+        browser.get(pathToDocument);
+        expect(getItems().count()).toBe(100);
+        browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)');
+        expect(getItems().count()).toBe(200);
+      });
 
-  it('does not trigger immediately when infinite-scroll-immediate-check is false', function () {
-    replace('content', '<div infinite-scroll="loadMore()" infinite-scroll-immediate-check="false">' + itemsMarkup + '</div>');
-    browser.get(pathToDocument);
-    expect(getItems().count()).toBe(0);
-  });
+      it('does not trigger immediately when infinite-scroll-immediate-check is false', function () {
+        replace('content', '<div infinite-scroll="loadMore()" infinite-scroll-immediate-check="false">' + itemsMarkup + '</div>');
+        browser.get(pathToDocument);
+        expect(getItems().count()).toBe(0);
+      });
 
-  it('respects the disabled attribute', function () {
-    replace('content', '<div infinite-scroll="loadMore()" infinite-scroll-disabled="busy">' + itemsMarkup + '</div>');
-    browser.get(pathToDocument);
-    expect(getItems().count()).toBe(0);
-    element(by.id('action')).click();
-    expect(getItems().count()).toBe(100);
-  });
+      it('respects the disabled attribute', function () {
+        replace('content', '<div infinite-scroll="loadMore()" infinite-scroll-disabled="busy">' + itemsMarkup + '</div>');
+        browser.get(pathToDocument);
+        expect(getItems().count()).toBe(0);
+        element(by.id('action')).click();
+        expect(getItems().count()).toBe(100);
+      });
 
-  it('respects the infinite-scroll-distance attribute', function () {
-    replace('content', '<div infinite-scroll="loadMore()" infinite-scroll-distance="1">' + itemsMarkup + '</div>');
-    browser.get(pathToDocument);
-    expect(getItems().count()).toBe(100);
-    // 2 * window.innerHeight means that the bottom of the screen should be somewhere close to
-    // body height - window height. That means that the top of the window is body height - 2 * window height.
-    // Why can't we even set -10 here? Looks like it also takes the last element's height into account
-    browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight - 20)');
-    expect(getItems().count()).toBe(100);
-    browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight)');
-    expect(getItems().count()).toBe(200);
+      it('respects the infinite-scroll-distance attribute', function () {
+        replace('content', '<div infinite-scroll="loadMore()" infinite-scroll-distance="1">' + itemsMarkup + '</div>');
+        browser.get(pathToDocument);
+        expect(getItems().count()).toBe(100);
+        // 2 * window.innerHeight means that the bottom of the screen should be somewhere close to
+        // body height - window height. That means that the top of the window is body height - 2 * window height.
+        // Why can't we even set -10 here? Looks like it also takes the last element's height into account
+        browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight - 20)');
+        expect(getItems().count()).toBe(100);
+        browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight)');
+        expect(getItems().count()).toBe(200);
+      });
+
+    });
   });
 });
