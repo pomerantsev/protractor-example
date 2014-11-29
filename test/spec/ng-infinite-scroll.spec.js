@@ -5,7 +5,7 @@ describe('ng-infinite-scroll', function () {
   }
 
   it('should be triggered when page is scrolled to the bottom', function () {
-    browser.get('test/examples/basic.html');
+    browser.get('test/examples/index.html');
     var items = getItems();
     expect(items.count()).toBe(100);
     browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)');
