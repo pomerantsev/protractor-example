@@ -1,0 +1,1 @@
+Testing ngInfiniteScroll with Protractor.
