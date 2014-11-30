@@ -9,4 +9,4 @@ before_script:
   - npm install -g grunt-cli
 
 script:
-  - grunt test:travis-protractor
+  - grunt test:protractor-travis
