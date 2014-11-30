@@ -59,7 +59,7 @@ describe('ng-infinite-scroll', function () {
         // Why can't we even set -10 here? Looks like it also takes the last element's height into account
         browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight - 20)');
         expect(getItems().count()).toBe(100);
-        browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight)');
+        browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight + 20)');
         expect(getItems().count()).toBe(200);
       });
 
