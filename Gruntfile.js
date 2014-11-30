@@ -87,6 +87,20 @@ module.exports = function (grunt) {
     startProtractor(this.data, this.async());
   });
 
+  grunt.registerTask('sauceConnect', 'Launch Sauce Connect', function () {
+    var done = this.async();
+    require('sauce-connect-launcher')({
+      username: 'pomerantsevp',
+      accessKey: '497ab04e-f31b-4a7b-9b18-ae3fbe023222'
+    }, function (err, sauceConnectProcess) {
+      if (err) {
+        console.error(err.message);
+      } else {
+        done();
+      }
+    });
+  });
+
   grunt.registerTask(
     'test:protractor',
     'Run the end to end tests with Protractor and keep a test server running in the background',
@@ -102,6 +116,7 @@ module.exports = function (grunt) {
     'Run the end to end tests with Protractor for Travis CI builds',
     [
       'connect:testserver',
+      'sauceConnect',
       'protractor:travis'
     ]
   );
