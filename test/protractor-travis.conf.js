@@ -1,7 +1,7 @@
 exports.config = {
   sauceUser: 'pomerantsevp',
   sauceKey: '497ab04e-f31b-4a7b-9b18-ae3fbe023222',
-  specs: ['**/*.spec.js'],
+  specs: ['**/*.spec.coffee'],
   baseUrl: 'http://localhost:8000/',
 
   // All available platform / browser combinations can be found on https://saucelabs.com/platforms
