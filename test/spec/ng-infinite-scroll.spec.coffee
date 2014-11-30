@@ -84,15 +84,19 @@ describe "ng-infinite-scroll", ->
     describe "with Angular #{angularVersion}", ->
       for container in ["window", "ancestor", "parent"]
         describe "with #{container} as container", ->
+
+          replaceIndexFile = (attrs) ->
+            fs.writeFileSync(pathToDocument, getTemplate(angularVersion, container, attrs))
+
           it "should be triggered immediately and when container is scrolled to the bottom", ->
-            fs.writeFileSync(pathToDocument, getTemplate(angularVersion, container, ""))
+            replaceIndexFile ""
             browser.get pathToDocument
             expect(getItems().count()).toBe 100
             browser.driver.executeScript(scrollToBottomScript(container))
             expect(getItems().count()).toBe 200
 
           it "does not trigger immediately when infinite-scroll-immediate-check is false", ->
-            fs.writeFileSync(pathToDocument, getTemplate(angularVersion, container, "infinite-scroll-immediate-check='false'"))
+            replaceIndexFile "infinite-scroll-immediate-check='false'"
             browser.get pathToDocument
             expect(getItems().count()).toBe 0
             element(By.id("force")).click()
@@ -101,14 +105,14 @@ describe "ng-infinite-scroll", ->
             expect(getItems().count()).toBe 200
 
           it "respects the disabled attribute", ->
-            fs.writeFileSync(pathToDocument, getTemplate(angularVersion, container, "infinite-scroll-disabled='busy'"))
+            replaceIndexFile "infinite-scroll-disabled='busy'"
             browser.get pathToDocument
             expect(getItems().count()).toBe 0
             element(By.id("action")).click()
             expect(getItems().count()).toBe 100
 
           it "respects the infinite-scroll-distance attribute", ->
-            fs.writeFileSync(pathToDocument, getTemplate(angularVersion, container, "infinite-scroll-distance='1'"))
+            replaceIndexFile "infinite-scroll-distance='1'"
             browser.get pathToDocument
             expect(getItems().count()).toBe 100
             # 2 * window.innerHeight means that the bottom of the screen should be somewhere close to
