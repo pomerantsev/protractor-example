@@ -1,6 +1,39 @@
 fs = require "fs"
 mkdirp = require "mkdirp"
 
+initialTemplate = """
+  <!doctype html>
+  <head>
+    <style>
+      html, body {
+        height: 100%;
+      }
+    </style>
+    <!-- angularjs -->
+    <script src="../../lib/ng-infinite-scroll.js"></script>
+    <script>
+      angular.module('app', ['infinite-scroll'])
+        .run(function ($rootScope) {
+          $rootScope.items = [];
+          $rootScope.loadMore = function () {
+            [].push.apply($rootScope.items, new Array(100));
+          };
+
+          $rootScope.busy = true;
+
+          $rootScope.enable = function () {
+            $rootScope.busy = false;
+          };
+        });
+    </script>
+  </head>
+  <body ng-app="app">
+    <a id="action" ng-click="enable()">Enable</a>
+    <a id="force" ng-click="loadMore()">Force</a>
+    <!-- content -->
+  </body>
+"""
+
 itemsMarkup = "<p ng-repeat='item in items track by $index'>{{$index}}</p>"
 template = undefined
 tmpDir = ".tmp"
@@ -11,7 +44,7 @@ describe "ng-infinite-scroll", ->
     element.all(By.repeater "item in items")
 
   replace = (block, content) ->
-    template = template.replace(new RegExp("(<!-- #{block}:start -->)[^]*(<!-- #{block}:end -->)", "m"), "$1#{content}$2")
+    template = template.replace(new RegExp("<!-- #{block} -->"), content)
     mkdirp tmpDir
     fs.writeFileSync(pathToDocument, template)
 
@@ -50,7 +83,7 @@ describe "ng-infinite-scroll", ->
       "infinite-scroll-container='\"#ancestor\"'"
 
   beforeEach ->
-    template = fs.readFileSync("test/examples/index.html").toString()
+    template = initialTemplate
 
   for angularVersion in ["1.2.0", "1.3.4"]
     describe "with Angular #{angularVersion}", ->
