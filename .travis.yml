@@ -21,5 +21,5 @@ before_script:
 script:
   - grunt test:travis-protractor
 
-# after_script:
-#   - ./scripts/travis/print_logs.sh
+after_script:
+  - ./scripts/travis/print_logs.sh

@@ -103,7 +103,7 @@ describe "ng-infinite-scroll", ->
             browser.get pathToDocument
             expect(getItems().count()).toBe 100
             browser.driver.executeScript(scrollToBottomScript(container))
-            expect(getItems().count()).toBe 300
+            expect(getItems().count()).toBe 200
 
           it "does not trigger immediately when infinite-scroll-immediate-check is false", ->
             replaceIndexFile "infinite-scroll-immediate-check='false'"
