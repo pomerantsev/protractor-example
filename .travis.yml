@@ -2,24 +2,11 @@ language: node_js
 node_js:
   - '0.10'
 
-env:
-  # global:
-  #   - SAUCE_USERNAME=pomerantsevp
-  #   - SAUCE_ACCESS_KEY=497ab04e-f31b-4a7b-9b18-ae3fbe023222
-  #   - LOGS_DIR=/tmp/logs
-  #   - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
-
 install:
   - npm install
 
 before_script:
-  # - mkdir -p $LOGS_DIR
-  # - ./lib/sauce/sauce_connect_setup.sh
   - npm install -g grunt-cli
-  # - ./scripts/travis/wait_for_browser_provider.sh
 
 script:
   - grunt test:travis-protractor
-
-# after_script:
-#   - ./scripts/travis/print_logs.sh
