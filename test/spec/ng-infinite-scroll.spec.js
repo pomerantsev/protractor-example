@@ -82,6 +82,10 @@ describe('ng-infinite-scroll', function () {
             replace('content', wrap(container, '<div infinite-scroll="loadMore()" infinite-scroll-immediate-check="false" ' + getContainerAttr(container) + '>' + itemsMarkup + '</div>'));
             browser.get(pathToDocument);
             expect(getItems().count()).toBe(0);
+            element(by.id('force')).click();
+            expect(getItems().count()).toBe(100);
+            browser.driver.executeScript(scrollToBottomScript(container));
+            expect(getItems().count()).toBe(200);
           });
 
           it('respects the disabled attribute', function () {
