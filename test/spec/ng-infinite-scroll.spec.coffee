@@ -41,27 +41,6 @@ getTemplate = (angularVersion, container, attrs) ->
     </body>
   """
 
-getItems = ->
-  element.all(By.repeater "item in items")
-
-scrollToBottomScript = (container) ->
-  if container is "window"
-    "window.scrollTo(0, document.body.scrollHeight)"
-  else
-    "#{getElementByIdScript(container)}.scrollTop = #{calculateChildrenHeightScript(container)}"
-
-getElementByIdScript = (id) ->
-  "document.getElementById('#{id}')"
-
-calculateChildrenHeightScript = (container) ->
-  "[].concat.apply([], #{getElementByIdScript(container)}.childNodes).map(function (el) { return el.offsetHeight ? el.offsetHeight : 0; }).reduce(function (cur, prev) { return prev + cur; }, 0)"
-
-scrollToLastScreenScript = (container, offset) ->
-  if container is "window"
-    "window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight + #{offset})"
-  else
-    "#{getElementByIdScript(container)}.scrollTop = #{calculateChildrenHeightScript(container)} - 2 * #{getElementByIdScript(container)}.offsetHeight + #{offset}"
-
 containers =
   window:
     start: ""
@@ -75,6 +54,36 @@ containers =
     start: "<div id='ancestor' style='height: 50%; overflow: auto;'><div>"
     end: "</div></div>"
     attr: "infinite-scroll-container='\"#ancestor\"'"
+
+getElementByIdScript = (id) ->
+  "document.getElementById('#{id}')"
+
+calculateChildrenHeightScript = (id) ->
+  """
+    [].concat.apply([], #{getElementByIdScript(id)}.childNodes)
+      .map(function (el) { return el.offsetHeight ? el.offsetHeight : 0; })
+      .reduce(function (cur, prev) { return prev + cur; }, 0)
+  """
+
+scrollToBottomScript = (container) ->
+  if container is "window"
+    "window.scrollTo(0, document.body.scrollHeight)"
+  else
+    "#{getElementByIdScript(container)}.scrollTop = #{calculateChildrenHeightScript(container)}"
+
+scrollToLastScreenScript = (container, offset) ->
+  # 2 * window.innerHeight means that the bottom of the screen should be somewhere close to
+  # body height - window height. That means that the top of the window is body height - 2 * window height.
+  if container is "window"
+    "window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight + #{offset})"
+  else
+    """
+      #{getElementByIdScript(container)}.scrollTop =
+        #{calculateChildrenHeightScript(container)} - 2 * #{getElementByIdScript(container)}.offsetHeight + #{offset}
+    """
+
+getItems = ->
+  element.all(By.repeater "item in items")
 
 tmpDir = ".tmp"
 pathToDocument = "#{tmpDir}/index.html"
@@ -116,9 +125,6 @@ describe "ng-infinite-scroll", ->
             replaceIndexFile "infinite-scroll-distance='1'"
             browser.get pathToDocument
             expect(getItems().count()).toBe 100
-            # 2 * window.innerHeight means that the bottom of the screen should be somewhere close to
-            # body height - window height. That means that the top of the window is body height - 2 * window height.
-            # Why can't we even set -10 here? Looks like it also takes the last element's height into account
             browser.driver.executeScript(scrollToLastScreenScript(container, -20))
             expect(getItems().count()).toBe 100
             browser.driver.executeScript(scrollToLastScreenScript(container, 20))
