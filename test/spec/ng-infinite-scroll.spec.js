@@ -1,8 +1,11 @@
 // Adding a line just to make a new commit.
 var fs = require('fs');
+var mkdirp = require('mkdirp');
 
 var itemsMarkup = '<p ng-repeat="item in items track by $index">{{$index}}</p>';
-var pathToDocument = 'test/examples/index.html';
+var template;
+var tmpDir = '.tmp';
+var pathToDocument = tmpDir + '/index.html';
 
 describe('ng-infinite-scroll', function () {
 
@@ -11,9 +14,9 @@ describe('ng-infinite-scroll', function () {
   }
 
   function replace (block, content) {
-    var fileContents = fs.readFileSync(pathToDocument).toString();
-    var modifiedContents = fileContents.replace(new RegExp('(<!-- ' + block + ':start -->)[^]*(<!-- ' + block + ':end -->)', 'm'), '$1' + content + '$2');
-    fs.writeFileSync(pathToDocument, modifiedContents);
+    template = template.replace(new RegExp('(<!-- ' + block + ':start -->)[^]*(<!-- ' + block + ':end -->)', 'm'), '$1' + content + '$2');
+    mkdirp(tmpDir);
+    fs.writeFileSync(pathToDocument, template);
   }
 
   function scrollToBottomScript (container) {
@@ -56,18 +59,14 @@ describe('ng-infinite-scroll', function () {
     }
   }
 
-  // This should be handled by afterAll, which Jasmine lacks
-  afterEach(function () {
-    replace('content', '');
+  beforeEach(function () {
+     template = fs.readFileSync('test/examples/index.html').toString();
   });
 
   ['1.2.0', '1.3.4'].forEach(function (angularVersion) {
     describe('with Angular ' + angularVersion, function () {
       beforeEach(function () {
         replace('angularjs', '<script src="http://ajax.googleapis.com/ajax/libs/angularjs/' + angularVersion + '/angular.min.js"></script>');
-      });
-      afterEach(function () {
-        replace('angularjs', '');
       });
       ['window', 'ancestor', 'parent'].forEach(function (container) {
         describe('with ' + container + ' as container', function () {
