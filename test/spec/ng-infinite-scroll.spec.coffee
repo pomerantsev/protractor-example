@@ -86,6 +86,7 @@ describe "ng-infinite-scroll", ->
         describe "with #{container} as container", ->
 
           replaceIndexFile = (attrs) ->
+            mkdirp tmpDir
             fs.writeFileSync(pathToDocument, getTemplate(angularVersion, container, attrs))
 
           it "should be triggered immediately and when container is scrolled to the bottom", ->
