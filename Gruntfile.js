@@ -37,7 +37,7 @@ module.exports = function (grunt) {
       }
     },
     protractor: {
-      normal: 'test/protractor.conf.js',
+      normal: 'test/protractor-local.conf.js',
       travis: 'test/protractor-travis.conf.js'
     }
   });
