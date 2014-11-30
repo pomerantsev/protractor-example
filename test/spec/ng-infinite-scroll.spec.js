@@ -23,19 +23,23 @@ describe('ng-infinite-scroll', function () {
     if (container === 'window') {
       return 'window.scrollTo(0, document.body.scrollHeight)';
     } else {
-      return 'document.getElementById("' + container + '").scrollTop = ' + calculateChildrenHeightScript(container);
+      return getElementByIdScript(container) + '.scrollTop = ' + calculateChildrenHeightScript(container);
     }
   }
 
+  function getElementByIdScript (id) {
+    return 'document.getElementById("' + id + '")';
+  }
+
   function calculateChildrenHeightScript (container) {
-    return '[].concat.apply([], document.getElementById("' + container + '").childNodes).map(function (el) { return el.offsetHeight ? el.offsetHeight : 0; }).reduce(function (cur, prev) { return prev + cur; }, 0)';
+    return '[].concat.apply([], ' + getElementByIdScript(container) + '.childNodes).map(function (el) { return el.offsetHeight ? el.offsetHeight : 0; }).reduce(function (cur, prev) { return prev + cur; }, 0)';
   }
 
   function scrollToLastScreenScript (container, offset) {
     if (container === 'window') {
       return 'window.scrollTo(0, document.body.scrollHeight - 2 * window.innerHeight + ' + offset + ')';
     } else {
-      return 'document.getElementById("' + container + '").scrollTop = ' + calculateChildrenHeightScript(container) + ' - 2 * document.getElementById("' + container + '").offsetHeight + ' + offset;
+      return getElementByIdScript(container) + '.scrollTop = ' + calculateChildrenHeightScript(container) + ' - 2 * ' + getElementByIdScript(container) + '.offsetHeight + ' + offset;
     }
   }
 
