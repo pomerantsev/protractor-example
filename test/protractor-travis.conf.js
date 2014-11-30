@@ -10,7 +10,7 @@ exports.config = {
       browserName: 'chrome',
       platform: 'OS X 10.10',
       version: '37'
-    },
+    }
 
     // Flaky
     // {
@@ -55,13 +55,13 @@ exports.config = {
     //   'device-orientation': 'portrait'
     // },
 
-    {
-      browserName: 'internet explorer',
-      platform: 'Windows 7',
-      version: '9'
-    }
+    // {
+    //   browserName: 'internet explorer',
+    //   platform: 'Windows 7',
+    //   version: '9'
+    // }
   ],
 
-  allScriptsTimeout: 30000,
-  getPageTimeout: 30000
+  allScriptsTimeout: 60000,
+  getPageTimeout: 60000
 };
