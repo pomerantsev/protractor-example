@@ -31,13 +31,13 @@ getTemplate = (angularVersion, container, attrs) ->
     <body ng-app="app">
       <a id="action" ng-click="enable()">Enable</a>
       <a id="force" ng-click="loadMore()">Force</a>
-      #{getContainerStart(container)}
-        <div infinite-scroll="loadMore()" #{getContainerAttr(container)} #{attrs}>
+      #{containers[container].start}
+        <div infinite-scroll="loadMore()" #{containers[container].attr} #{attrs}>
           <p ng-repeat='item in items track by $index'>
             {{$index}}
           </p>
         </div>
-      #{getContainerEnd(container)}
+      #{containers[container].end}
     </body>
   """
 
@@ -62,29 +62,19 @@ scrollToLastScreenScript = (container, offset) ->
   else
     "#{getElementByIdScript(container)}.scrollTop = #{calculateChildrenHeightScript(container)} - 2 * #{getElementByIdScript(container)}.offsetHeight + #{offset}"
 
-getContainerStart = (container) ->
-  if container is "window"
-    ""
-  else if container is "parent"
-    "<div id='parent' style='height: 50%; overflow: auto;'>"
-  else if container is "ancestor"
-    "<div id='ancestor' style='height: 50%; overflow: auto;'><div>"
-
-getContainerEnd = (container) ->
-  if container is "window"
-    ""
-  else if container is "parent"
-    "</div>"
-  else if container is "ancestor"
-    "</div></div>"
-
-getContainerAttr = (container) ->
-  if container is "window"
-    ""
-  else if container is "parent"
-    "infinite-scroll-parent"
-  else if container is "ancestor"
-    "infinite-scroll-container='\"#ancestor\"'"
+containers =
+  window:
+    start: ""
+    end: ""
+    attr: ""
+  parent:
+    start: "<div id='parent' style='height: 50%; overflow: auto;'>"
+    end: "</div>"
+    attr: "infinite-scroll-parent"
+  ancestor:
+    start: "<div id='ancestor' style='height: 50%; overflow: auto;'><div>"
+    end: "</div></div>"
+    attr: "infinite-scroll-container='\"#ancestor\"'"
 
 tmpDir = ".tmp"
 pathToDocument = "#{tmpDir}/index.html"
