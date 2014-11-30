@@ -1,52 +1,47 @@
 fs = require "fs"
 mkdirp = require "mkdirp"
 
-initialTemplate = """
-  <!doctype html>
-  <head>
-    <style>
-      html, body {
-        height: 100%;
-      }
-    </style>
-    <!-- angularjs -->
-    <script src="../../lib/ng-infinite-scroll.js"></script>
-    <script>
-      angular.module('app', ['infinite-scroll'])
-        .run(function ($rootScope) {
-          $rootScope.items = [];
-          $rootScope.loadMore = function () {
-            [].push.apply($rootScope.items, new Array(100));
-          };
+getTemplate = (angularVersion, scroller) ->
+  """
+    <!doctype html>
+    <head>
+      <style>
+        html, body {
+          height: 100%;
+        }
+      </style>
+      <script src='http://ajax.googleapis.com/ajax/libs/angularjs/#{angularVersion}/angular.min.js'></script>
+      <script src="../../lib/ng-infinite-scroll.js"></script>
+      <script>
+        angular.module('app', ['infinite-scroll'])
+          .run(function ($rootScope) {
+            $rootScope.items = [];
+            $rootScope.loadMore = function () {
+              [].push.apply($rootScope.items, new Array(100));
+            };
 
-          $rootScope.busy = true;
+            $rootScope.busy = true;
 
-          $rootScope.enable = function () {
-            $rootScope.busy = false;
-          };
-        });
-    </script>
-  </head>
-  <body ng-app="app">
-    <a id="action" ng-click="enable()">Enable</a>
-    <a id="force" ng-click="loadMore()">Force</a>
-    <!-- content -->
-  </body>
-"""
+            $rootScope.enable = function () {
+              $rootScope.busy = false;
+            };
+          });
+      </script>
+    </head>
+    <body ng-app="app">
+      <a id="action" ng-click="enable()">Enable</a>
+      <a id="force" ng-click="loadMore()">Force</a>
+      #{scroller}
+    </body>
+  """
 
 itemsMarkup = "<p ng-repeat='item in items track by $index'>{{$index}}</p>"
-template = undefined
 tmpDir = ".tmp"
 pathToDocument = "#{tmpDir}/index.html"
 
 describe "ng-infinite-scroll", ->
   getItems = ->
     element.all(By.repeater "item in items")
-
-  replace = (block, content) ->
-    template = template.replace(new RegExp("<!-- #{block} -->"), content)
-    mkdirp tmpDir
-    fs.writeFileSync(pathToDocument, template)
 
   scrollToBottomScript = (container) ->
     if container is "window"
@@ -82,24 +77,19 @@ describe "ng-infinite-scroll", ->
     else if container is "ancestor"
       "infinite-scroll-container='\"#ancestor\"'"
 
-  beforeEach ->
-    template = initialTemplate
-
   for angularVersion in ["1.2.0", "1.3.4"]
     describe "with Angular #{angularVersion}", ->
-      beforeEach ->
-        replace "angularjs", "<script src='http://ajax.googleapis.com/ajax/libs/angularjs/#{angularVersion}/angular.min.js'></script>"
       for container in ["window", "ancestor", "parent"]
         describe "with #{container} as container", ->
           it "should be triggered immediately and when container is scrolled to the bottom", ->
-            replace "content", wrap(container, "<div infinite-scroll='loadMore()' #{getContainerAttr(container)}>#{itemsMarkup}</div>")
+            fs.writeFileSync(pathToDocument, getTemplate(angularVersion, wrap(container, "<div infinite-scroll='loadMore()' #{getContainerAttr(container)}>#{itemsMarkup}</div>")))
             browser.get pathToDocument
             expect(getItems().count()).toBe 100
             browser.driver.executeScript(scrollToBottomScript(container))
             expect(getItems().count()).toBe 200
 
           it "does not trigger immediately when infinite-scroll-immediate-check is false", ->
-            replace "content", wrap(container, "<div infinite-scroll='loadMore()' infinite-scroll-immediate-check='false' #{getContainerAttr(container)}>#{itemsMarkup}</div>")
+            fs.writeFileSync(pathToDocument, getTemplate(angularVersion, wrap(container, "<div infinite-scroll='loadMore()' infinite-scroll-immediate-check='false' #{getContainerAttr(container)}>#{itemsMarkup}</div>")))
             browser.get pathToDocument
             expect(getItems().count()).toBe 0
             element(By.id("force")).click()
@@ -108,14 +98,14 @@ describe "ng-infinite-scroll", ->
             expect(getItems().count()).toBe 200
 
           it "respects the disabled attribute", ->
-            replace "content", wrap(container, "<div infinite-scroll='loadMore()' infinite-scroll-disabled='busy' #{getContainerAttr(container)}>#{itemsMarkup}</div>")
+            fs.writeFileSync(pathToDocument, getTemplate(angularVersion, wrap(container, "<div infinite-scroll='loadMore()' infinite-scroll-disabled='busy' #{getContainerAttr(container)}>#{itemsMarkup}</div>")))
             browser.get pathToDocument
             expect(getItems().count()).toBe 0
             element(By.id("action")).click()
             expect(getItems().count()).toBe 100
 
           it "respects the infinite-scroll-distance attribute", ->
-            replace "content", wrap(container, "<div infinite-scroll='loadMore()' infinite-scroll-distance='1' #{getContainerAttr(container)}>#{itemsMarkup}</div>")
+            fs.writeFileSync(pathToDocument, getTemplate(angularVersion, wrap(container, "<div infinite-scroll='loadMore()' infinite-scroll-distance='1' #{getContainerAttr(container)}>#{itemsMarkup}</div>")))
             browser.get pathToDocument
             expect(getItems().count()).toBe 100
             # 2 * window.innerHeight means that the bottom of the screen should be somewhere close to
